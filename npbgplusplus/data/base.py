@@ -174,7 +174,7 @@ class BaseScene(Dataset):
         if len(self.images) > 0:
             return self.images[idx]
         image: Image = pil_loader(self.imgs_paths[idx])
-        image = image.resize(self.old_image_size[::-1], Image.BILINEAR)
+        image = image.resize(self.old_image_size[::-1], Image.Resampling.BILINEAR)
         image = torch.tensor(np.array(image)).permute(2, 0, 1).contiguous()
         image = image / 255
         return image
