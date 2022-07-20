@@ -4,7 +4,7 @@ train_num_samples: 2000
 train_random_zoom: ~ # [ 0.5, 2.0 ]
 train_random_shift: true
 train_image_size: 256
-data_root: ../../data/scannet_for_npbg
+data_root: /cwang/home/yxj/datasets/example_for_npbg/scannet
 scene_subroot: ${datasets.data_root}
 images_subroot: ${datasets.data_root}
 number_of_images:
