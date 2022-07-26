@@ -83,7 +83,7 @@ def image_process(frames, temp_dir, scene_dir, crop, scale):
     # poses = np.array(poses, dtype = np.float32)
     # frames = np.array(frames, dtype = np.int32)
     # np.savez_compressed(os.path.join(scene_dir, 'poses.npz'), frames = frames, poses = poses)
-    intrinsics = {'width': W, 'heigth': H, 'K': K[:3, :3]}
+    intrinsics = {'width': W, 'height': H, 'K': K[:3, :3]}
     np.save(os.path.join(scene_dir, 'intrinsics.npy'), intrinsics)
     np.save(os.path.join(scene_dir, 'extrinsics.npy'), extrinsics)
 
