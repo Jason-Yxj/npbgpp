@@ -1517,15 +1517,15 @@ train:
 
 val:
   # - dataset_name: scene0099_00_val
-  - dataset_name: scene0102_00
+  - dataset_name: scene0092_00
     dataset_class:
       _target_: npbgplusplus.data.ViewSceneWrapper
       scene_dataset:
         _target_: ${datasets.scene_class_name}
         _convert_: all
-        scene_root: ${datasets.scene_subroot}/scene0102_00
-        images_root: ${datasets.scene_subroot}/scene0102_00/images
-        pc_path: ${datasets.scene_subroot}/scene0102_00/full.ply
+        scene_root: ${datasets.scene_subroot}/scene0092_00
+        images_root: ${datasets.scene_subroot}/scene0092_00/images
+        pc_path: ${datasets.scene_subroot}/scene0092_00/full.ply
         target_views_indices: ${datasets.val_indices}
         exclude_indices: ${datasets.holdout_indices}
         noise_sigma: ${datasets.noise_sigma}
