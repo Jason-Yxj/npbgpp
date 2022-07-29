@@ -1,3 +1,4 @@
+from turtle import right
 import numpy as np
 from sklearn.metrics import jaccard_score
 import yaml
@@ -48,6 +49,22 @@ def cpy_ply(save_dir):
         os.system('cp ' + f'{scene_ply_dir}/full.ply ' + save_scene_dir)
     print('Done!')
 
+def delete_bad(save_dir, fram_skip):
+    save_dir = os.path.join(save_dir, 'scans_train')
+    for scene_name in os.listdir(save_dir):
+        save_scene_dir = os.path.join(save_dir, scene_name)
+        img_dir = os.path.join(save_scene_dir, 'images')
+        ext_path = os.path.join(save_scene_dir, 'extrinsics.npy')
+        exts= np.load(ext_path)
+        right_exts = []
+        for idx, ext in enumerate(exts):
+            if np.isinf(ext).sum() > 0 or np.isnan(ext).sum() > 0:
+                img_path = os.path.join(img_dir, f'{idx * fram_skip}.jpg')
+                os.system('rm ' + img_path)
+            else:
+                right_exts.append(ext)
+        np.save(ext_path, right_exts)
+    print('Done!')
 
 base_dir = '/cwang/home/yxj/datasets/scannet/'
 save_dir = '/cwang/home/yxj/datasets/scannet/cache/'
@@ -56,5 +73,6 @@ config_path = '/cwang/home/yxj/Project/npbgpp/configs/datasets/scannet_pretrain.
 f = open(config_path)
 cfg = yaml.load(f.read(), Loader=yaml.FullLoader)
 
-main('train', cfg, base_dir, save_dir, frame_skip = 20)
+# main('train', cfg, base_dir, save_dir, frame_skip = 20)
 # cpy_ply(save_dir)
+delete_bad(save_dir, fram_skip = 20)
