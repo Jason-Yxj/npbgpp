@@ -116,7 +116,7 @@ class NPBGPlusPlus(NPBGBase):
         # get image features
         if debug:
             c_images = views_images.detach().clone().cpu()
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
 
         views_images = self.feature_extractor(views_images)  # b*k, fc, fh, fw
 
@@ -213,9 +213,9 @@ class NPBGPlusPlus(NPBGBase):
             points = new_points
             interest_mask = new_mask
             self.aggregator.reset()
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
             forward_info = self.update_descriptors(points, views_data, interest_mask, crop_max_size, debug=debug)
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
 
         # we need to provide index during validation, because batch consists of views from one scene only
         # i.e. batch size == 1
@@ -233,7 +233,7 @@ class NPBGPlusPlus(NPBGBase):
         #                                     torch.randn_like(descriptors, device=descriptors.device))
         #     mask = interest_mask
 
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
         # print("NUM POINTS VISIBLE", mask.sum())
 
@@ -297,7 +297,7 @@ class NPBGPlusPlus(NPBGBase):
         num_scenes, num_points = self.cached_points.shape[:2]
         self.aggregator.reset(num_scenes, num_points, self.descriptor_dim, self.device)
         for cache_idx, scene_idx in enumerate(self.cache_idx2scene_idx[stage]):
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
             points = self.cached_points[cache_idx][None, :, :].to(self.device)  # (1, N, 3)
             rr, t, fl, pp, image_idxs = self.datasets[stage][scene_idx][2].get_input_view_cameras(
                 expand_intrinsics=True)  # (k, 3, 3), ...
@@ -316,7 +316,7 @@ class NPBGPlusPlus(NPBGBase):
                     ),
                     index=cache_idx
                 )
-                torch.cuda.empty_cache()
+                # torch.cuda.empty_cache()
 
     def save_descriptive_coefficients(self, stage):
         self.create_folder(os.path.join(os.getcwd(), "descriptors"))
@@ -337,7 +337,7 @@ class NPBGPlusPlus(NPBGBase):
             coefficients = coefficients[cache_idx, :n_points].view(n_points, -1).data.detach().cpu()
             torch.save(coefficients, save_path)
         del coefficients
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
     def on_validation_epoch_start(self):
         super(NPBGPlusPlus, self).on_validation_epoch_start()

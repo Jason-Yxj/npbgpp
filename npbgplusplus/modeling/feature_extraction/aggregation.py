@@ -29,7 +29,7 @@ class MeanAggregator(nn.Module):
             self.features_total: Union[float, torch.Tensor] = 0.0  # [b, n]
         self.aggregated_features: Optional[torch.Tensor] = None  # [b, channels, n]
         self.visible_mask: Optional[torch.Tensor] = None  # [b, n]
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
     def get_num_scenes(self) -> int:
         if self.features_sum is not None and isinstance(self.features_sum, torch.Tensor):
@@ -164,7 +164,7 @@ class SphereAggregator(nn.Module):
         self.visible_mask: Optional[torch.Tensor] = None  # [b, n]
         self.beta = None
         self.ym = None
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
     def get_num_scenes(self) -> int:
         if self.xt_sum is not None and isinstance(self.xt_sum, torch.Tensor):
@@ -206,7 +206,7 @@ class SphereAggregator(nn.Module):
 
         basis.view(b * k * n, self.m)[mask.view(-1), :] = self.calculate_basis(view_dirs, distances, optical_axis)
         del view_dirs, distances, optical_axis
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
         features = features.where(mask[:, :, None, :], features.new_zeros(1, 1, 1, 1))  # (b, k, c, n)
 
         xt_sum = basis.sum(dim=1)  # (b, n, m)

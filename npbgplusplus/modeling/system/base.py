@@ -188,7 +188,7 @@ class NPBGBase(pl.LightningModule):
             else:
                 del rgbs
             del inp_descriptors
-            torch.cuda.empty_cache()
+            # torch.cuda.empty_cache()
 
         raster_img_size = image_size
         if self.hparams.system.align_during_rendering:
