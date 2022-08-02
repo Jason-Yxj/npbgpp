@@ -1,4 +1,4 @@
-import gc
+# import gc
 import logging
 import math
 import os
@@ -150,9 +150,9 @@ class BaseScene(Dataset):
         return self.point_cloud
 
     def unload_point_cloud(self):
-        del self.point_cloud
+        # del self.point_cloud
         self.point_cloud = None
-        gc.collect()
+        # gc.collect()
 
     def load_images(self):
         log.info(f"Start image caching for {self.scene_root}...")
@@ -163,10 +163,10 @@ class BaseScene(Dataset):
         log.info(f"End image caching for {self.scene_root}.")
 
     def unload_images(self):
-        del self.images, self.masks
+        # del self.images, self.masks
         self.images = []
         self.masks = []
-        gc.collect()
+        # gc.collect()
 
     def read_image(self, idx: int, ignore_exclude_indices: bool = False) -> Optional[torch.Tensor]:
         if not ignore_exclude_indices and self.exclude_indices is not None and idx in self.exclude_indices:
