@@ -1,3 +1,4 @@
+checkpoints*
 experiments*
 .vscode
 __pycache__
