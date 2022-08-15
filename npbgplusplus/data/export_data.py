@@ -63,6 +63,30 @@ def delete_bad(save_dir, fram_skip):
         np.save(ext_path, right_exts)
     print('Done!')
 
+def get_depth(base_dir, save_dir, frame_skip):
+    for scene_name in os.listdir(save_dir):
+        base_scene_dir = os.path.join(base_dir, scene_name)
+        save_scene_dir = os.path.join(save_dir, scene_name)
+        sens_path = os.path.join(base_scene_dir, f'{scene_name}.sens')
+        sd = SensorData(sens_path)
+        sd.export_depth_images(os.path.join(save_scene_dir, 'depth'), frame_skip = frame_skip)
+
+# def get_all_pose(base_dir):
+#     base_scene_dir = os.path.join(base_dir, 'scene0000_00')
+#     save_scene_dir = '/cwang/home/yxj/datasets/scannet/example_for_npbg/scannet/scene0000_00'
+#     sens_path = os.path.join(base_scene_dir, 'scene0000_00.sens')
+
+#     sd = SensorData(sens_path)
+#     extrinsics = []
+#     extrinsics_path = os.path.join(save_scene_dir, 'all_extrinsics.npy')
+#     print('exporting', len(sd.frames), 'camera poses to', extrinsics_path)
+#     for f in tqdm(range(0, len(sd.frames)), desc='export pose'):
+#         c2w = sd.frames[f].camera_to_world
+#         w2c = np.linalg.inv(c2w)
+#         extrinsics.append(w2c)
+#     np.save(extrinsics_path, extrinsics)    
+
+
 base_dir = '/cwang/home/yxj/datasets/scannet/scans_train/'
 save_dir = '/cwang/home/yxj/datasets/scannet/cache/scans_train/'
 
@@ -73,5 +97,7 @@ cfg = yaml.load(f.read(), Loader=yaml.FullLoader)
 # main('train', cfg, base_dir, save_dir, frame_skip = 20)
 # cpy_ply(save_dir)
 # delete_bad(save_dir, fram_skip = 20)
-one_scene(base_dir, save_dir, 'scene0100_00', frame_skip = 20)
-one_scene(base_dir, save_dir, 'scene0101_00', frame_skip = 20)
+# one_scene(base_dir, save_dir, 'scene0100_00', frame_skip = 20)
+# one_scene(base_dir, save_dir, 'scene0101_00', frame_skip = 20)
+# get_depth(base_dir, save_dir, frame_skip = 20)
+# get_all_pose(base_dir)
