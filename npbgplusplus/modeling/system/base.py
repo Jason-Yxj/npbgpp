@@ -1,3 +1,5 @@
+import time
+import numpy as np
 import contextlib
 import logging
 import os
@@ -34,6 +36,8 @@ class NPBGBase(pl.LightningModule):
         self.hparams.update(cfg)
         self.descriptor_dim = self.hparams.system.descriptor_dim
         self.automatic_optimization = False
+
+        self.times = 0
 
         # setup rgb converter
         self.rgb_converter = RGBConverter(self.descriptor_dim)
@@ -438,10 +442,14 @@ class NPBGBase(pl.LightningModule):
         if self.hparams.system.use_masks:
             target_img = target_img.where(target_binary_mask.bool(), self.bg_rgb)
 
+        torch.cuda.synchronize()
+        start = time.time()
         rendered_img, forward_info = self.forward(
             *self.extract_forward_args_from_batch(batch, all_points_are_interesting=True, aggregate=False,
                                                   index=dataloader_idx), clamp=True,
             background=self.bg_rgb, return_raster_result=True)
+        torch.cuda.synchronize()
+        self.times += time.time() - start
 
         margin = None
         if 'image_margin' in self.hparams.datasets and self.hparams.datasets.image_margin is not None:
@@ -563,6 +571,7 @@ class NPBGBase(pl.LightningModule):
         self._shared_epoch_end('val')
 
     def test_epoch_end(self, outputs):
+        np.savetxt(os.path.join(os.getcwd(), 'time.txt'), np.array([self.times]))
         self._shared_eval_epoch_end('test')
         self._shared_epoch_end('test')
 
