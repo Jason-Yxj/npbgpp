@@ -1,6 +1,7 @@
 import os
 from typing import Optional, Tuple, Union, List
 
+import h5py
 import numpy as np
 import torch
 import trimesh
@@ -35,16 +36,38 @@ class ScannetScene(BaseScene):
 
     # https://github.com/facebookresearch/pytorch3d/blob/main/docs/notes/cameras.md
     def get_intrinsics_ndc(self):
-        camera = np.load(os.path.join(self.scene_root, 'intrinsics.npy'), allow_pickle=True).item()
-        image_height, image_width = camera['height'], camera['width']
-        K = camera['K']
-        return convert_screen_intrinsics_to_ndc((image_height, image_width), K[0, 0], K[1, 1])  # , K[0, 2], K[1, 2])
+        # camera = np.load(os.path.join(self.scene_root, 'intrinsics.npy'), allow_pickle=True).item()
+        # image_height, image_width = camera['height'], camera['width']
+        # K = camera['K']
+        # return convert_screen_intrinsics_to_ndc((image_height, image_width), K[0, 0], K[1, 1])  # , K[0, 2], K[1, 2])
+
+        f = h5py.File(os.path.join(self.scene_root, 'build/poses.h5'), 'r')
+        K = f['image_K'][0]
+        return convert_screen_intrinsics_to_ndc((480, 640), K[0, 0], K[1, 1])  # , K[0, 2], K[1, 2])
 
     def get_extrinsics(self, verbose=True) -> (List[str], torch.Tensor, torch.Tensor, torch.Tensor):
-        extrinsics = np.load(os.path.join(self.scene_root, 'extrinsics.npy'))
-        labels = sorted([name.split('.')[0] for name in os.listdir(os.path.join(self.scene_root, 'images'))], key=int)
+        # extrinsics = np.load(os.path.join(self.scene_root, 'extrinsics.npy'))
+        # labels = sorted([name.split('.')[0] for name in os.listdir(os.path.join(self.scene_root, 'images'))], key=int)
+        # R_cols, Ts, cam_poses = [], [], []
+        # for RT in extrinsics:
+        #     R_col = RT[:3, :3]
+        #     T = RT[:3, 3]
+        #     R_col[:2, :] *= -1
+        #     T[:2] *= -1
+        #     cam_pos = -R_col.T @ T
+
+        #     R_cols.append(R_col)
+        #     Ts.append(T)
+        #     cam_poses.append(cam_pos)
+        # return labels, torch.tensor(R_cols, dtype=torch.float32), torch.tensor(Ts, dtype=torch.float32), \
+        #        torch.tensor(cam_poses, dtype=torch.float32)
+
+        f = h5py.File(os.path.join(self.scene_root, 'build/poses.h5'), 'r')
+        c2ws = f['c2w'][:]
+        labels = f['frame'][:]
         R_cols, Ts, cam_poses = [], [], []
-        for RT in extrinsics:
+        for c2w in c2ws:
+            RT = np.linalg.inv(c2w)
             R_col = RT[:3, :3]
             T = RT[:3, 3]
             R_col[:2, :] *= -1
@@ -55,10 +78,10 @@ class ScannetScene(BaseScene):
             Ts.append(T)
             cam_poses.append(cam_pos)
         return labels, torch.tensor(R_cols, dtype=torch.float32), torch.tensor(Ts, dtype=torch.float32), \
-               torch.tensor(cam_poses, dtype=torch.float32)
+               torch.tensor(cam_poses, dtype=torch.float32)        
 
     def _load_point_cloud(self, include_rgb: bool = False) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
-        pc = trimesh.load(os.path.join(self.scene_root, "full.ply"))
+        pc = trimesh.load(os.path.join(self.scene_root, "build/small.ply"))
         vertices = torch.tensor(pc.vertices.view(np.ndarray), dtype=torch.float32)
         if include_rgb:
             rgb = torch.tensor(pc.colors, dtype=torch.float32)[:, :3] / 255
