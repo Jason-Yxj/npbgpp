@@ -1,0 +1,35 @@
+# conda activate NeuralPoints
+
+# train:
+python train_net.py trainer.gpus=[3] hydra.run.dir=experiments/npbgpp_scannet datasets=scannet_pretrain datasets.n_point=6e6 system=npbgpp_sphere system.visibility_scale=0.5 trainer.max_epochs=39 dataloader.train_data_mode=each trainer.reload_dataloaders_every_n_epochs=1
+
+
+# test:
+python train_net.py trainer.gpus=[7] hydra.run.dir=experiments/npbgpp_eval_scan710 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.scene_name=scene0710_00 datasets.n_point=6e6 system=npbgpp_sphere system.visibility_scale=0.5 weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt eval_only=true dataloader=small
+
+python train_net.py trainer.gpus=[7] hydra.run.dir=experiments/npbgpp_eval_scan758 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.scene_name=scene0758_00 datasets.n_point=6e6 system=npbgpp_sphere system.visibility_scale=0.5 weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt eval_only=true dataloader=small
+
+python train_net.py trainer.gpus=[7] hydra.run.dir=experiments/npbgpp_eval_scan781 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.scene_name=scene0781_00 datasets.n_point=6e6 system=npbgpp_sphere system.visibility_scale=0.5 weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt eval_only=true dataloader=small
+
+
+# finetune：
+python train_net.py trainer.gpus=[6] hydra.run.dir=experiments/npbgpp_ft_scan710 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.train_num_samples=2000 datasets.train_image_size=null datasets.train_random_shift=false datasets.train_random_zoom=[0.5,2.0] datasets.scene_name=scene0710_00 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_ft_scan710/descriptors trainer.max_epochs=5 system.descriptors_pretrained_dir=experiments/npbgpp_eval_scan710/descriptors weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt dataloader=small datasets.n_point=6e6
+
+python train_net.py trainer.gpus=[4] hydra.run.dir=experiments/npbgpp_ft_scan758 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.train_num_samples=2000 datasets.train_image_size=null datasets.train_random_shift=false datasets.train_random_zoom=[0.5,2.0] datasets.scene_name=scene0758_00 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_ft_scan758/descriptors trainer.max_epochs=5 system.descriptors_pretrained_dir=experiments/npbgpp_eval_scan758/descriptors weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt dataloader=small datasets.n_point=6e6
+
+python train_net.py trainer.gpus=[7] hydra.run.dir=experiments/npbgpp_ft_scan781 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.train_num_samples=2000 datasets.train_image_size=null datasets.train_random_shift=false datasets.train_random_zoom=[0.5,2.0] datasets.scene_name=scene0781_00 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_ft_scan781/descriptors trainer.max_epochs=5 system.descriptors_pretrained_dir=experiments/npbgpp_eval_scan781/descriptors weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt dataloader=small datasets.n_point=6e6
+
+
+# test with finetune
+python train_net.py trainer.gpus=[4] hydra.run.dir=experiments/npbgpp_test_scan710 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.scene_name=scene0710_00 datasets.n_point=6e6 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_test_scan710/descriptors system.descriptors_pretrained_dir=experiments/npbgpp_ft_scan710/descriptors weights_path=experiments/npbgpp_ft_scan710/checkpoints/last.ckpt eval_only=true dataloader=small
+
+python train_net.py trainer.gpus=[4] hydra.run.dir=experiments/npbgpp_test_scan758 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.scene_name=scene0758_00 datasets.n_point=6e6 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_test_scan758/descriptors system.descriptors_pretrained_dir=experiments/npbgpp_ft_scan758/descriptors weights_path=experiments/npbgpp_ft_scan758/checkpoints/last.ckpt eval_only=true dataloader=small
+
+python train_net.py trainer.gpus=[4] hydra.run.dir=experiments/npbgpp_test_scan781 datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.scene_name=scene0781_00 datasets.n_point=6e6 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/npbgpp_test_scan781/descriptors system.descriptors_pretrained_dir=experiments/npbgpp_ft_scan781/descriptors weights_path=experiments/npbgpp_ft_scan781/checkpoints/last.ckpt eval_only=true dataloader=small
+
+
+# 占卡 
+python train_net.py trainer.gpus=[7] hydra.run.dir=experiments/useless datasets=scannet_one_scene datasets.data_root=/cwang/home/yxj/datasets/scannet/scans_test_processed datasets.selection_count=0 datasets.train_num_samples=2000 datasets.train_image_size=null datasets.train_random_shift=false datasets.train_random_zoom=[0.5,2.0] datasets.scene_name=scene0710_00 system=coefficients_ft system.max_points=6e6 system.descriptors_save_dir=experiments/useless/descriptors trainer.max_epochs=500 system.descriptors_pretrained_dir=experiments/npbgpp_eval_scan710/descriptors weights_path=checkpoints/npbgpp_scannet_epoch38.ckpt dataloader=small datasets.n_point=6e6
+
+
+
