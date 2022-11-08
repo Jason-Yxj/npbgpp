@@ -74,6 +74,11 @@ class BaseScene(Dataset):
                 assert 0 <= ei < len(self.names), f"{ei}, {len(self.names)}"
             self.target_views_indices_mask[exclude_indices] = 0
             self.input_views_indices_mask[exclude_indices] = 0
+        
+        # input_id = np.where(self.input_views_indices_mask == 1)[0]
+        # input_id = input_id[::2]
+        # self.input_views_indices_mask = torch.zeros(len(self.names), dtype=torch.bool)
+        # self.input_views_indices_mask[input_id] = 1
 
         self.input_views_indices = torch.arange(len(self.names))[self.input_views_indices_mask]
         self.target_views_indices = torch.arange(len(self.names))[self.target_views_indices_mask]
@@ -92,6 +97,9 @@ class BaseScene(Dataset):
         self.cache_idx = None
         self.images = []
         self.masks = []
+
+        np.set_printoptions(suppress=True)
+        np.savetxt(os.path.join(os.getcwd(), 'num.txt'), (len(self.names), self.input_views_indices_mask.sum(), self.target_views_indices_mask.sum()), fmt='%4d')
 
     def get_intrinsics_ndc(self) -> (float, float, float, float, (int, int)):
         """

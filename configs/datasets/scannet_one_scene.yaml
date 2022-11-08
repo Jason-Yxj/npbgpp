@@ -1,24 +1,22 @@
 scene_class_name: npbgplusplus.data.ScannetScene
-scene_name: scene0000_00
+scene_name: ~ # scene0000_00
 train_num_samples: 2000
 train_random_zoom: ~ # [ 0.5, 2.0 ]
 train_random_shift: true
-train_image_size: 256
-data_root: /cwang/home/yxj/datasets/example_for_npbg/scannet
+train_image_size: None
+data_root: ~ # /cwang/home/yxj/datasets/scannet/example_for_npbg/scannet
 scene_subroot: ${datasets.data_root}
 images_subroot: ${datasets.data_root}
 number_of_images:
   _target_: npbgplusplus.utils.misc.number_of_files
-  path: ${datasets.images_subroot}/${datasets.scene_name}/images
+  path: ${datasets.images_subroot}/${datasets.scene_name}/build/image
 holdout_indices:
-  _target_: npbgplusplus.utils.misc.select_indices
-  margin: 10
-  select: 10
-  total: ${datasets.number_of_images}
+  _target_: npbgplusplus.utils.misc.select_test_id
+  scene: ${datasets.scene_name}
 val_indices:
   _target_: npbgplusplus.utils.misc.offset_indices
   indices: ${datasets.holdout_indices}
-  offset: -5
+  offset: -10
 
 cache_images: false
 selection_count: 3  # during train
@@ -34,8 +32,8 @@ train:
         _target_: ${datasets.scene_class_name}
         _convert_: all
         scene_root: ${datasets.scene_subroot}/${datasets.scene_name}
-        images_root: ${datasets.images_subroot}/${datasets.scene_name}/images
-        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/full.ply
+        images_root: ${datasets.images_subroot}/${datasets.scene_name}/build/image
+        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/build/small.ply
         num_samples: ${datasets.train_num_samples}
         random_zoom: ${datasets.train_random_zoom}
         random_shift: ${datasets.train_random_shift}
@@ -57,8 +55,8 @@ val:
         _target_: ${datasets.scene_class_name}
         _convert_: all
         scene_root: ${datasets.scene_subroot}/${datasets.scene_name}
-        images_root: ${datasets.scene_subroot}/${datasets.scene_name}/images
-        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/full.ply
+        images_root: ${datasets.scene_subroot}/${datasets.scene_name}/build/image
+        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/build/small.ply
         target_views_indices: ${datasets.val_indices}
         exclude_indices: ${datasets.holdout_indices}
         noise_sigma: ${datasets.noise_sigma}
@@ -74,8 +72,8 @@ test:
         _target_: ${datasets.scene_class_name}
         _convert_: all
         scene_root: ${datasets.scene_subroot}/${datasets.scene_name}
-        images_root: ${datasets.scene_subroot}/${datasets.scene_name}/images
-        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/full.ply
+        images_root: ${datasets.scene_subroot}/${datasets.scene_name}/build/image
+        pc_path: ${datasets.scene_subroot}/${datasets.scene_name}/build/small.ply
         target_views_indices: ${datasets.holdout_indices}
         exclude_indices: ${datasets.val_indices}
         noise_sigma: ${datasets.noise_sigma}
